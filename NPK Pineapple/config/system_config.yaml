@@ -1,0 +1,66 @@
+agronomy:
+  optimal_ranges:
+    N: [100, 150]       # mg/kg
+    P: [30, 60]
+    K: [150, 200]
+    EC: [600, 1200]     # μS/cm
+    pH: [5.0, 6.0]
+    moisture: [55, 75]  # %
+    temp: [22, 32]      # °C
+
+  growth_stages:
+    vegetative: 0
+    pre_flowering: 1
+    fruiting: 2
+
+  critical_limits:
+    EC_max: 1500
+    moisture_min: 15
+    pH_min: 4.5
+    pH_max: 7.0
+
+  correction_limits_per_cycle:
+    max_N_adj: 30       # mg/kg per cycle
+    max_P_adj: 15
+    max_K_adj: 30
+    max_pH_adj: 0.5
+    max_irrigation_ml: 500
+
+model:
+  lgb_params:
+    n_estimators: 300
+    learning_rate: 0.05
+    max_depth: 6
+    num_leaves: 31
+    min_child_samples: 20
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_alpha: 0.1
+    reg_lambda: 0.1
+    n_jobs: 2            # Jetson-friendly
+
+  targets:
+    - delta_N
+    - delta_P
+    - delta_K
+    - irrigation_ml
+    - pH_adj
+
+  onnx_path: "model/pineapple_model.onnx"
+
+system:
+  sensor_interval_minutes: 15
+  data_mode: "sim"       # "sim" or "real" — switch with zero code changes
+  sim_num_rows: 60000
+  log_db_path: "data/readings.db"
+  log_level: "INFO"
+
+hardware:
+  modbus_port: "/dev/ttyUSB0"
+  modbus_baudrate: 9600
+  gpio_pins:
+    N_pump: 11
+    P_pump: 13
+    K_pump: 15
+    irrigation_valve: 16
+    pH_down_pump: 18

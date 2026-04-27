@@ -1,0 +1,7 @@
+names:
+- pineapple
+nc: 1
+path: c:\Users\Asus\Desktop\FARMBOT AI\FRC\FRUIT_PINEAPPLE\data\detection\detection
+test: c:\Users\Asus\Desktop\FARMBOT AI\FRC\FRUIT_PINEAPPLE\data\detection\detection\images\test
+train: c:\Users\Asus\Desktop\FARMBOT AI\FRC\FRUIT_PINEAPPLE\data\detection\detection\images\train
+val: c:\Users\Asus\Desktop\FARMBOT AI\FRC\FRUIT_PINEAPPLE\data\detection\detection\images\val

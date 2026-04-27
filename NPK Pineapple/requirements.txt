@@ -1,0 +1,10 @@
+lightgbm>=4.0.0
+onnxmltools>=1.12.0
+onnxruntime>=1.17.0
+skl2onnx>=0.15.0
+numpy>=1.24.0
+PyYAML>=6.0
+APScheduler>=3.10.0
+pymodbus>=3.5.0
+# Jetson.GPIO>=2.1.0   # Uncomment on Jetson devices only
+pytest>=7.0.0
