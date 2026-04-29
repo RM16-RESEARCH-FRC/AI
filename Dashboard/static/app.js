@@ -75,10 +75,15 @@ function renderVision(state) {
   const vision = state.vision || {};
   $("leafStatus").textContent = vision.leaf_status || "--";
   $("leafConfidence").textContent = vision.leaf_confidence ? `${Math.round(vision.leaf_confidence * 100)}% confidence` : "--";
+  $("leafSeverity").textContent = vision.leaf_severity || "--";
+  $("leafDetectionCount").textContent = vision.leaf_detection_count ?? "--";
   $("fruitCount").textContent = vision.fruit_count ?? "--";
   $("ripeness").textContent = vision.ripeness || "--";
   $("ripenessConfidence").textContent = vision.ripeness_confidence ? `${Math.round(vision.ripeness_confidence * 100)}% confidence` : "--";
   $("weight").textContent = vision.estimated_weight_kg ? `${formatNumber(vision.estimated_weight_kg, 2)} kg` : "--";
+
+  const leafModel = state.model?.leaf || {};
+  $("leafModelClasses").textContent = leafModel.classes?.length ? leafModel.classes.join(" / ") : "classes pending";
 }
 
 function renderSystem(state) {
@@ -92,6 +97,7 @@ function renderSystem(state) {
   $("jetsonName").textContent = state.system?.jetson_name || "--";
   $("latency").textContent = state.system?.latency_ms ? `${formatNumber(state.system.latency_ms, 1)} ms` : "--";
   $("modelStatus").textContent = state.model?.status || state.predictions?.model_status || "--";
+  $("leafModelStatus").textContent = state.model?.leaf?.status || "--";
   $("usbFps").textContent = state.system?.fps_usb ? `${formatNumber(state.system.fps_usb, 1)} fps` : "-- fps";
   $("depthFps").textContent = state.system?.fps_depth ? `${formatNumber(state.system.fps_depth, 1)} fps` : "-- fps";
   $("simulationButton").textContent = state.simulation_enabled ? "S" : "J";

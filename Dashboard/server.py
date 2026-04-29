@@ -8,6 +8,7 @@ import threading
 import time
 from collections import deque
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,7 @@ DASHBOARD_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = DASHBOARD_DIR.parent
 NPK_ROOT = PROJECT_ROOT / "NPK Pineapple"
 NPK_MODEL_DIR = NPK_ROOT / "model"
+LEAF_MODEL_PATH = PROJECT_ROOT / "LEAF_DETECTION" / "leaf_detection.onnx"
 STATIC_DIR = DASHBOARD_DIR / "static"
 
 OPTIMAL_RANGES = {
@@ -44,6 +46,45 @@ DEFAULT_SENSORS = {
     "temp": 27.0,
     "growth_stage": 2,
 }
+
+
+@lru_cache(maxsize=1)
+def get_leaf_model_info() -> dict[str, Any]:
+    info: dict[str, Any] = {
+        "path": str(LEAF_MODEL_PATH),
+        "status": "missing",
+        "classes": [],
+        "input": None,
+        "output": None,
+        "error": None,
+    }
+    if not LEAF_MODEL_PATH.exists():
+        info["error"] = "LEAF_DETECTION/leaf_detection.onnx was not found."
+        return info
+
+    try:
+        import ast
+        import onnxruntime as ort
+
+        session = ort.InferenceSession(str(LEAF_MODEL_PATH), providers=["CPUExecutionProvider"])
+        input_meta = session.get_inputs()[0]
+        output_meta = session.get_outputs()[0]
+        custom = session.get_modelmeta().custom_metadata_map
+        names = ast.literal_eval(custom.get("names", "{}"))
+        info.update(
+            {
+                "status": "loaded",
+                "classes": [str(value) for _, value in sorted(names.items())],
+                "input": {"name": input_meta.name, "shape": input_meta.shape},
+                "output": {"name": output_meta.name, "shape": output_meta.shape},
+                "task": custom.get("task"),
+                "model": custom.get("description"),
+            }
+        )
+    except Exception as exc:
+        info["status"] = "unavailable"
+        info["error"] = str(exc)
+    return info
 
 
 class TelemetryPayload(BaseModel):
@@ -164,6 +205,9 @@ class DashboardState:
             "vision": {
                 "leaf_status": "No Jetson data yet",
                 "leaf_confidence": None,
+                "leaf_severity": "unknown",
+                "leaf_detection_count": 0,
+                "leaf_detections": [],
                 "fruit_count": 0,
                 "ripeness": "Unknown",
                 "ripeness_confidence": None,
@@ -188,6 +232,7 @@ class DashboardState:
                 "npk_model_dir": str(NPK_MODEL_DIR),
                 "status": model_service.status,
                 "error": model_service.error,
+                "leaf": get_leaf_model_info(),
             },
             "optimal_ranges": OPTIMAL_RANGES,
         }
@@ -269,8 +314,11 @@ class DashboardState:
             self.state["sensors"] = {key: round(value, 2) if isinstance(value, float) else value for key, value in sensors.items()}
             self.state["predictions"] = self.model_service.predict(self.state["sensors"])
             self.state["vision"] = {
-                "leaf_status": random.choice(["Healthy", "Healthy", "Possible leaf spot"]),
+                "leaf_status": random.choice(["healthy", "healthy", "mealybug_wilt", "fruit_rot", "root_rot"]),
                 "leaf_confidence": round(random.uniform(0.74, 0.96), 2),
+                "leaf_severity": random.choice(["clear", "clear", "medium", "high"]),
+                "leaf_detection_count": random.choice([0, 1, 1, 2]),
+                "leaf_detections": [],
                 "fruit_count": random.choice([1, 1, 2, 3]),
                 "ripeness": random.choice(["Semi-ripe", "Ripe", "Unripe"]),
                 "ripeness_confidence": round(random.uniform(0.68, 0.94), 2),
@@ -334,6 +382,7 @@ class DashboardState:
             "npk_model_dir": str(NPK_MODEL_DIR),
             "status": self.model_service.status,
             "error": self.model_service.error,
+            "leaf": get_leaf_model_info(),
         }
 
 

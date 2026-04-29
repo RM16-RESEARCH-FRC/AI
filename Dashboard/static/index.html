@@ -72,6 +72,7 @@
             <div><span>Name</span><strong id="jetsonName">--</strong></div>
             <div><span>Latency</span><strong id="latency">--</strong></div>
             <div><span>NPK Model</span><strong id="modelStatus">--</strong></div>
+            <div><span>Leaf Model</span><strong id="leafModelStatus">--</strong></div>
           </div>
         </div>
       </section>
@@ -89,11 +90,22 @@
 
         <article class="panel">
           <div class="panel-head">
-            <h2>Leaf & Fruit Detection</h2>
+            <h2>Leaf Disease Detection</h2>
+            <span id="leafModelClasses" class="muted">--</span>
+          </div>
+          <div class="leaf-grid">
+            <div class="leaf-diagnosis"><span>Disease</span><strong id="leafStatus">--</strong><small id="leafConfidence">--</small></div>
+            <div><span>Severity</span><strong id="leafSeverity">--</strong><small>model estimate</small></div>
+            <div><span>Detections</span><strong id="leafDetectionCount">--</strong><small>leaf regions</small></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Fruit Detection</h2>
             <span class="muted">USB model output</span>
           </div>
-          <div class="vision-grid">
-            <div><span>Leaf</span><strong id="leafStatus">--</strong><small id="leafConfidence">--</small></div>
+          <div class="vision-grid fruit-grid">
             <div><span>Fruit Count</span><strong id="fruitCount">--</strong><small>pineapples</small></div>
             <div><span>Ripeness</span><strong id="ripeness">--</strong><small id="ripenessConfidence">--</small></div>
             <div><span>Weight</span><strong id="weight">--</strong><small>estimated</small></div>

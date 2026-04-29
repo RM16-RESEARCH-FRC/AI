@@ -54,6 +54,12 @@ def simulated_sensors() -> dict[str, float | int]:
 
 def build_payload(args: argparse.Namespace) -> dict[str, Any]:
     sensors = load_sensor_json(args.sensor_json) if args.sensor_json else simulated_sensors()
+    leaf_result = {}
+    if args.leaf_image:
+        from leaf_inference import LeafDiseaseDetector
+
+        leaf_result = LeafDiseaseDetector(args.leaf_model_path).predict_image(args.leaf_image)
+
     return {
         "sensors": sensors or DEFAULT_SENSORS,
         "streams": {
@@ -63,10 +69,13 @@ def build_payload(args: argparse.Namespace) -> dict[str, Any]:
         "vision": {
             "leaf_status": args.leaf_status,
             "leaf_confidence": args.leaf_confidence,
+            "leaf_severity": args.leaf_severity,
+            "leaf_detection_count": args.leaf_detection_count,
             "fruit_count": args.fruit_count,
             "ripeness": args.ripeness,
             "ripeness_confidence": args.ripeness_confidence,
             "estimated_weight_kg": args.estimated_weight_kg,
+            **leaf_result,
         },
         "system": {
             "jetson_name": args.jetson_name or platform.node() or "jetson",
@@ -85,6 +94,10 @@ def main() -> None:
     parser.add_argument("--jetson-name", default="")
     parser.add_argument("--leaf-status", default="pending")
     parser.add_argument("--leaf-confidence", type=float)
+    parser.add_argument("--leaf-severity", default="unknown")
+    parser.add_argument("--leaf-detection-count", type=int, default=0)
+    parser.add_argument("--leaf-image", help="Optional image path for one-shot leaf model inference before publishing.")
+    parser.add_argument("--leaf-model-path", default="../LEAF_DETECTION/leaf_detection.onnx")
     parser.add_argument("--fruit-count", type=int, default=0)
     parser.add_argument("--ripeness", default="pending")
     parser.add_argument("--ripeness-confidence", type=float)

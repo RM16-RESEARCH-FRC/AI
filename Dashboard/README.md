@@ -21,6 +21,7 @@ Dashboard/
   jetson_camera_server.py   # Optional Jetson MJPEG camera stream server
   jetson_publisher.py       # Jetson telemetry publisher scaffold
   requirements.txt          # PC dashboard dependencies
+  leaf_inference.py         # ONNX helper for LEAF_DETECTION/leaf_detection.onnx
   static/
     index.html
     styles.css
@@ -101,6 +102,16 @@ python jetson_publisher.py \
 
 When this publisher connects, the PC dashboard automatically disables its internal simulation and switches to Jetson telemetry.
 
+To test the pulled leaf disease ONNX model on a single image before publishing:
+
+```bash
+pip install opencv-python
+python jetson_publisher.py \
+  --dashboard-url http://PC_IP:8000 \
+  --leaf-image /path/to/leaf.jpg \
+  --usb-stream-url http://JETSON_IP:8090/usb.mjpg
+```
+
 ## Telemetry API Contract
 
 The Jetson should POST JSON to:
@@ -124,8 +135,10 @@ Example payload:
     "growth_stage": 2
   },
   "vision": {
-    "leaf_status": "Healthy",
+    "leaf_status": "mealybug_wilt",
     "leaf_confidence": 0.91,
+    "leaf_severity": "high",
+    "leaf_detection_count": 1,
     "fruit_count": 2,
     "ripeness": "Semi-ripe",
     "ripeness_confidence": 0.86,
@@ -169,6 +182,21 @@ Keep the field names exactly as shown in the API contract: `N`, `P`, `K`, `EC`, 
 
 ## Connecting Fruit and Leaf Models
 
+The leaf disease model has been pulled from GitHub into:
+
+```text
+../LEAF_DETECTION/leaf_detection.onnx
+```
+
+The model metadata reports:
+
+```text
+Task: YOLO detection
+Input: images [1, 3, 640, 640]
+Output: output0 [1, 8, 8400]
+Classes: fruit_rot, healthy, mealybug_wilt, root_rot
+```
+
 The fruit project already has these exported assets:
 
 ```text
@@ -187,13 +215,15 @@ Recommended Jetson flow:
 
 The ripeness classification ONNX model is not currently present locally according to `../ONNX_MODELS_SUMMARY.md`; download/export it before wiring true ripeness inference.
 
-Leaf disease detection is not currently present as a separate model in the repo. The dashboard already has fields for it, so once the model is trained/exported, publish:
+Publish leaf disease output like this:
 
 ```json
 {
   "vision": {
-    "leaf_status": "Bacterial spot",
-    "leaf_confidence": 0.88
+    "leaf_status": "root_rot",
+    "leaf_confidence": 0.88,
+    "leaf_severity": "high",
+    "leaf_detection_count": 2
   }
 }
 ```
@@ -239,4 +269,4 @@ POST /api/simulation/false
 3. Run `jetson_publisher.py` from the Jetson and confirm the dashboard switches from `SIMULATED` to `CONNECTED`.
 4. Replace simulated sensor values in `jetson_publisher.py` with the real 7-in-1 sensor reader.
 5. Add the fruit inference pipeline on the Jetson and publish `vision` values.
-6. Add or export the missing leaf disease and ripeness models, then publish their predictions to the same telemetry endpoint.
+6. Add or export the missing ripeness model, then publish its predictions to the same telemetry endpoint.
