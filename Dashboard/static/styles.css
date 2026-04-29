@@ -1,16 +1,19 @@
 :root {
-  --bg: #f4f7f5;
-  --surface: #ffffff;
-  --surface-2: #eef2f0;
-  --border: #d8ded9;
-  --text: #17211b;
-  --muted: #627066;
-  --green: #1f7a4d;
-  --yellow: #b7791f;
+  --bg: #f3f6ef;
+  --surface: #fffef9;
+  --surface-2: #edf3e8;
+  --border: #d7dfcf;
+  --text: #182318;
+  --muted: #63715b;
+  --green: #287343;
+  --yellow: #bf7e19;
   --red: #b42318;
-  --blue: #2764a3;
-  --ink: #0f1720;
-  --shadow: 0 8px 26px rgba(24, 36, 28, 0.08);
+  --blue: #28628f;
+  --leaf: #4f8a43;
+  --soil: #6f5636;
+  --pineapple: #d99b22;
+  --ink: #152016;
+  --shadow: 0 10px 28px rgba(44, 61, 37, 0.1);
 }
 
 * {
@@ -20,7 +23,10 @@
 body {
   margin: 0;
   min-width: 320px;
-  background: var(--bg);
+  background:
+    linear-gradient(116deg, rgba(79, 138, 67, 0.1), transparent 34%),
+    repeating-linear-gradient(102deg, rgba(111, 86, 54, 0.08) 0 2px, transparent 2px 34px),
+    var(--bg);
   color: var(--text);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -33,10 +39,39 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 22px;
-  background: rgba(255, 255, 255, 0.94);
-  border-bottom: 1px solid var(--border);
+  padding: 12px 22px;
+  background:
+    linear-gradient(90deg, rgba(255, 254, 249, 0.98), rgba(255, 254, 249, 0.9)),
+    linear-gradient(90deg, rgba(79, 138, 67, 0.16), rgba(217, 155, 34, 0.18));
+  border-bottom: 1px solid #c8d6c0;
   backdrop-filter: blur(10px);
+}
+
+.topbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--leaf), var(--pineapple), var(--soil));
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 13px;
+}
+
+.brand-art {
+  width: 92px;
+  height: 50px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(95, 66, 31, 0.18);
+  border-radius: 8px;
+  object-fit: cover;
+  background: #e9f6dd;
 }
 
 h1,
@@ -86,7 +121,7 @@ h2 {
 }
 
 .pill.simulated {
-  background: var(--blue);
+  background: var(--soil);
 }
 
 .pill.stale,
@@ -96,7 +131,7 @@ h2 {
 
 .layout {
   width: min(1540px, calc(100% - 28px));
-  margin: 14px auto 26px;
+  margin: 18px auto 28px;
   display: grid;
   gap: 14px;
 }
@@ -107,6 +142,23 @@ h2 {
   border-radius: 8px;
   box-shadow: var(--shadow);
   padding: 14px;
+}
+
+.feed-panel,
+.stream-config,
+.system-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.feed-panel::before,
+.stream-config::before,
+.system-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--leaf), var(--pineapple));
 }
 
 .panel-head {
@@ -135,12 +187,16 @@ h2 {
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 6px;
-  background: #121a16;
-  border: 1px solid #1c2b22;
+  background:
+    linear-gradient(135deg, rgba(40, 115, 67, 0.28), rgba(111, 86, 54, 0.2)),
+    #121a16;
+  border: 1px solid #213a24;
 }
 
 .feed-frame.depth {
-  background: #111827;
+  background:
+    repeating-linear-gradient(90deg, rgba(74, 130, 98, 0.18) 0 2px, transparent 2px 14px),
+    #101820;
 }
 
 .feed-frame img {
@@ -164,7 +220,7 @@ h2 {
   display: grid;
   place-items: center;
   padding: 18px;
-  color: #cad7cf;
+  color: #d8e6d6;
   text-align: center;
   font-size: 14px;
 }
@@ -200,7 +256,7 @@ input {
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 10px 11px;
-  background: #fbfcfb;
+  background: #fffef9;
   color: var(--text);
   font-size: 14px;
 }
@@ -217,9 +273,9 @@ button {
 .primary-button {
   height: 40px;
   padding: 0 16px;
-  background: var(--ink);
+  background: linear-gradient(135deg, #1d5f38, #7b5a2f);
   color: white;
-  border-color: var(--ink);
+  border-color: #1d5f38;
 }
 
 .icon-button {
@@ -245,7 +301,9 @@ button {
   min-width: 0;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #fbfcfb;
+  background:
+    linear-gradient(180deg, rgba(255, 245, 196, 0.36), transparent),
+    #fffef9;
   padding: 10px;
 }
 
@@ -281,7 +339,9 @@ small {
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--surface);
+  background:
+    linear-gradient(160deg, rgba(255, 245, 196, 0.35), transparent 42%),
+    var(--surface);
   box-shadow: var(--shadow);
 }
 
@@ -335,7 +395,7 @@ canvas {
 .event {
   border-left: 4px solid var(--blue);
   padding: 8px 10px;
-  background: #fbfcfb;
+  background: #fffef9;
   border-radius: 4px;
   font-size: 13px;
 }
@@ -370,6 +430,11 @@ canvas {
   .topbar {
     position: static;
     display: grid;
+  }
+
+  .brand-art {
+    width: 78px;
+    height: 44px;
   }
 
   .stream-config,
