@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FARMBOT AI Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>FARMBOT AI Dashboard</h1>
+        <p id="subtitle">Waiting for telemetry...</p>
+      </div>
+      <div class="status-strip">
+        <span id="connectionPill" class="pill">Loading</span>
+        <button id="simulationButton" class="icon-button" title="Toggle simulation" type="button">S</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="feed-grid" aria-label="Camera feeds">
+        <article class="panel feed-panel">
+          <div class="panel-head">
+            <h2>USB Cam</h2>
+            <span id="usbFps" class="muted">-- fps</span>
+          </div>
+          <div class="feed-frame">
+            <img id="usbFeed" alt="USB camera live feed" />
+            <div id="usbPlaceholder" class="feed-placeholder">USB stream not connected</div>
+          </div>
+        </article>
+
+        <article class="panel feed-panel">
+          <div class="panel-head">
+            <h2>Depth Cam</h2>
+            <span id="depthFps" class="muted">-- fps</span>
+          </div>
+          <div class="feed-frame depth">
+            <img id="depthFeed" alt="Depth camera live feed" />
+            <div id="depthPlaceholder" class="feed-placeholder">Depth stream not connected</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="control-row">
+        <div class="panel stream-config">
+          <div class="panel-head">
+            <h2>Jetson Streams</h2>
+            <span class="muted">Shown from browser</span>
+          </div>
+          <label>
+            USB URL
+            <input id="usbUrlInput" type="url" placeholder="http://JETSON_IP:8090/usb.mjpg" />
+          </label>
+          <label>
+            Depth URL
+            <input id="depthUrlInput" type="url" placeholder="http://JETSON_IP:8090/depth.mjpg" />
+          </label>
+          <button id="applyStreams" class="primary-button" type="button">Apply</button>
+        </div>
+
+        <div class="panel system-panel">
+          <div class="panel-head">
+            <h2>Jetson</h2>
+            <span id="updatedAt" class="muted">--</span>
+          </div>
+          <div class="system-grid">
+            <div><span>Name</span><strong id="jetsonName">--</strong></div>
+            <div><span>Latency</span><strong id="latency">--</strong></div>
+            <div><span>NPK Model</span><strong id="modelStatus">--</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics-grid" id="sensorGrid" aria-label="Sensor values"></section>
+
+      <section class="analysis-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <h2>NPK Model Predictions</h2>
+            <span id="predictionSource" class="muted">--</span>
+          </div>
+          <div id="predictionGrid" class="prediction-grid"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Leaf & Fruit Detection</h2>
+            <span class="muted">USB model output</span>
+          </div>
+          <div class="vision-grid">
+            <div><span>Leaf</span><strong id="leafStatus">--</strong><small id="leafConfidence">--</small></div>
+            <div><span>Fruit Count</span><strong id="fruitCount">--</strong><small>pineapples</small></div>
+            <div><span>Ripeness</span><strong id="ripeness">--</strong><small id="ripenessConfidence">--</small></div>
+            <div><span>Weight</span><strong id="weight">--</strong><small>estimated</small></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="bottom-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Sensor Trend</h2>
+            <span class="muted">Last 120 samples</span>
+          </div>
+          <canvas id="trendCanvas" width="900" height="260" aria-label="sensor trend chart"></canvas>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Events</h2>
+            <span class="muted">latest first</span>
+          </div>
+          <div id="eventList" class="event-list"></div>
+        </article>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

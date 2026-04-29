@@ -1,0 +1,382 @@
+:root {
+  --bg: #f4f7f5;
+  --surface: #ffffff;
+  --surface-2: #eef2f0;
+  --border: #d8ded9;
+  --text: #17211b;
+  --muted: #627066;
+  --green: #1f7a4d;
+  --yellow: #b7791f;
+  --red: #b42318;
+  --blue: #2764a3;
+  --ink: #0f1720;
+  --shadow: 0 8px 26px rgba(24, 36, 28, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 22px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
+h2 {
+  font-size: 15px;
+  font-weight: 720;
+  letter-spacing: 0;
+}
+
+.topbar p,
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.status-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pill {
+  display: inline-flex;
+  min-width: 96px;
+  justify-content: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: white;
+  background: var(--muted);
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.pill.connected {
+  background: var(--green);
+}
+
+.pill.simulated {
+  background: var(--blue);
+}
+
+.pill.stale,
+.pill.waiting {
+  background: var(--yellow);
+}
+
+.layout {
+  width: min(1540px, calc(100% - 28px));
+  margin: 14px auto 26px;
+  display: grid;
+  gap: 14px;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.feed-grid,
+.analysis-grid,
+.bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.feed-panel {
+  min-width: 0;
+}
+
+.feed-frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 6px;
+  background: #121a16;
+  border: 1px solid #1c2b22;
+}
+
+.feed-frame.depth {
+  background: #111827;
+}
+
+.feed-frame img {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed-frame.has-feed img {
+  display: block;
+}
+
+.feed-frame.has-feed .feed-placeholder {
+  display: none;
+}
+
+.feed-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  color: #cad7cf;
+  text-align: center;
+  font-size: 14px;
+}
+
+.control-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+}
+
+.stream-config {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.stream-config .panel-head {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 11px;
+  background: #fbfcfb;
+  color: var(--text);
+  font-size: 14px;
+}
+
+button {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 760;
+  cursor: pointer;
+}
+
+.primary-button {
+  height: 40px;
+  padding: 0 16px;
+  background: var(--ink);
+  color: white;
+  border-color: var(--ink);
+}
+
+.icon-button {
+  width: 34px;
+  height: 34px;
+}
+
+.system-grid,
+.vision-grid,
+.prediction-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.vision-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.system-grid div,
+.vision-grid div,
+.prediction-grid div {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fbfcfb;
+  padding: 10px;
+}
+
+.system-grid span,
+.vision-grid span,
+.prediction-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.system-grid strong,
+.vision-grid strong,
+.prediction-grid strong {
+  display: block;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  font-size: 18px;
+}
+
+small {
+  color: var(--muted);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(130px, 1fr));
+  gap: 14px;
+}
+
+.metric {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.metric .label-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.metric .value {
+  margin-top: 8px;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1;
+  font-weight: 790;
+}
+
+.metric .range {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.metric.ok {
+  border-left: 5px solid var(--green);
+}
+
+.metric.low,
+.metric.high {
+  border-left: 5px solid var(--yellow);
+}
+
+.metric.critical {
+  border-left: 5px solid var(--red);
+}
+
+canvas {
+  width: 100%;
+  max-height: 260px;
+}
+
+.event-list {
+  display: grid;
+  gap: 8px;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.event {
+  border-left: 4px solid var(--blue);
+  padding: 8px 10px;
+  background: #fbfcfb;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.event.warning {
+  border-left-color: var(--yellow);
+}
+
+.event.error,
+.event.critical {
+  border-left-color: var(--red);
+}
+
+@media (max-width: 1180px) {
+  .metrics-grid {
+    grid-template-columns: repeat(4, minmax(130px, 1fr));
+  }
+
+  .control-row,
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .topbar,
+  .feed-grid,
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    position: static;
+    display: grid;
+  }
+
+  .stream-config,
+  .metrics-grid,
+  .system-grid,
+  .vision-grid,
+  .prediction-grid {
+    grid-template-columns: 1fr;
+  }
+}
