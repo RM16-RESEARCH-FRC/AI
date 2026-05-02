@@ -25,6 +25,8 @@ NPK_ROOT = PROJECT_ROOT / "NPK Pineapple"
 NPK_MODEL_DIR = NPK_ROOT / "model"
 LEAF_MODEL_PATH = PROJECT_ROOT / "LEAF_DETECTION" / "leaf_detection.onnx"
 STATIC_DIR = DASHBOARD_DIR / "static"
+SIMULATION_TICK_SECONDS = 8.0
+SIMULATION_WAVE_SECONDS = 60.0
 
 OPTIMAL_RANGES = {
     "N": [100, 150],
@@ -216,12 +218,10 @@ class DashboardState:
             },
             "streams": {
                 "usb_cam": "",
-                "depth_cam": "",
             },
             "system": {
                 "jetson_name": "waiting-for-jetson",
                 "fps_usb": None,
-                "fps_depth": None,
                 "latency_ms": None,
             },
             "events": [
@@ -288,6 +288,8 @@ class DashboardState:
         with self.lock:
             self.simulation_enabled = enabled
             self.state["connection"] = "simulated" if enabled else "waiting"
+            if not enabled:
+                self.state["last_jetson_seen_at"] = None
             self._add_event_locked(
                 {"level": "info", "message": f"Simulation {'enabled' if enabled else 'disabled'}."}
             )
@@ -297,10 +299,9 @@ class DashboardState:
     def simulate_tick(self) -> None:
         with self.lock:
             if not self.simulation_enabled:
-                self._refresh_connection_locked()
                 return
 
-            t = time.time() / 12.0
+            t = time.time() / SIMULATION_WAVE_SECONDS
             sensors = {
                 "N": 124 + math.sin(t) * 9 + random.uniform(-1.8, 1.8),
                 "P": 43 + math.cos(t / 1.4) * 4 + random.uniform(-0.8, 0.8),
@@ -329,7 +330,6 @@ class DashboardState:
                 {
                     "jetson_name": "simulator",
                     "fps_usb": round(random.uniform(18, 28), 1),
-                    "fps_depth": round(random.uniform(12, 24), 1),
                     "latency_ms": round(random.uniform(18, 55), 1),
                 }
             )
@@ -373,7 +373,7 @@ class DashboardState:
         try:
             last_dt = datetime.fromisoformat(last_seen.replace("Z", "+00:00"))
             age = (datetime.now(timezone.utc) - last_dt).total_seconds()
-            self.state["connection"] = "stale" if age > 10 else "connected"
+            self.state["connection"] = "stale" if age > 15 else "connected"
         except ValueError:
             self.state["connection"] = "unknown"
 
@@ -426,7 +426,7 @@ def set_simulation(enabled: bool) -> dict[str, Any]:
 def simulation_loop() -> None:
     while True:
         dashboard_state.simulate_tick()
-        time.sleep(2)
+        time.sleep(SIMULATION_TICK_SECONDS)
 
 
 def main() -> None:

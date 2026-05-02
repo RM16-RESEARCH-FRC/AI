@@ -74,13 +74,13 @@ function renderPredictions(state) {
 function renderVision(state) {
   const vision = state.vision || {};
   $("leafStatus").textContent = vision.leaf_status || "--";
-  $("leafConfidence").textContent = vision.leaf_confidence ? `${Math.round(vision.leaf_confidence * 100)}% confidence` : "--";
+  $("leafConfidence").textContent = vision.leaf_confidence !== null && vision.leaf_confidence !== undefined ? `${Math.round(vision.leaf_confidence * 100)}% confidence` : "--";
   $("leafSeverity").textContent = vision.leaf_severity || "--";
   $("leafDetectionCount").textContent = vision.leaf_detection_count ?? "--";
   $("fruitCount").textContent = vision.fruit_count ?? "--";
   $("ripeness").textContent = vision.ripeness || "--";
-  $("ripenessConfidence").textContent = vision.ripeness_confidence ? `${Math.round(vision.ripeness_confidence * 100)}% confidence` : "--";
-  $("weight").textContent = vision.estimated_weight_kg ? `${formatNumber(vision.estimated_weight_kg, 2)} kg` : "--";
+  $("ripenessConfidence").textContent = vision.ripeness_confidence !== null && vision.ripeness_confidence !== undefined ? `${Math.round(vision.ripeness_confidence * 100)}% confidence` : "--";
+  $("weight").textContent = vision.estimated_weight_kg !== null && vision.estimated_weight_kg !== undefined ? `${formatNumber(vision.estimated_weight_kg, 2)} kg` : "--";
 
   const leafModel = state.model?.leaf || {};
   $("leafModelClasses").textContent = leafModel.classes?.length ? leafModel.classes.join(" / ") : "classes pending";
@@ -99,7 +99,6 @@ function renderSystem(state) {
   $("modelStatus").textContent = state.model?.status || state.predictions?.model_status || "--";
   $("leafModelStatus").textContent = state.model?.leaf?.status || "--";
   $("usbFps").textContent = state.system?.fps_usb ? `${formatNumber(state.system.fps_usb, 1)} fps` : "-- fps";
-  $("depthFps").textContent = state.system?.fps_depth ? `${formatNumber(state.system.fps_depth, 1)} fps` : "-- fps";
   $("simulationButton").textContent = state.simulation_enabled ? "S" : "J";
   $("simulationButton").title = state.simulation_enabled ? "Simulation is on" : "Waiting for Jetson telemetry";
 }
@@ -119,13 +118,11 @@ function setFeed(elementId, placeholderId, url) {
 
 function renderStreams(state) {
   const storedUsb = localStorage.getItem("farmbot_usb_stream") || "";
-  const storedDepth = localStorage.getItem("farmbot_depth_stream") || "";
   const usb = storedUsb || state.streams?.usb_cam || "";
-  const depth = storedDepth || state.streams?.depth_cam || "";
-  $("usbUrlInput").value = usb;
-  $("depthUrlInput").value = depth;
+  if (document.activeElement !== $("usbUrlInput")) {
+    $("usbUrlInput").value = usb;
+  }
   setFeed("usbFeed", "usbPlaceholder", usb);
-  setFeed("depthFeed", "depthPlaceholder", depth);
 }
 
 function renderEvents(state) {
@@ -133,13 +130,22 @@ function renderEvents(state) {
   list.innerHTML = "";
   const events = [...(state.events || [])].reverse();
   if (!events.length) {
-    list.innerHTML = `<div class="event">No events yet.</div>`;
+    const empty = document.createElement("div");
+    empty.className = "event";
+    empty.textContent = "No events yet.";
+    list.appendChild(empty);
     return;
   }
   events.slice(0, 20).forEach((event) => {
     const row = document.createElement("div");
     row.className = `event ${event.level || "info"}`;
-    row.innerHTML = `<strong>${event.level || "info"}</strong> ${event.message || ""}<br><small>${event.time || ""}</small>`;
+    const level = document.createElement("strong");
+    level.textContent = event.level || "info";
+    const message = document.createTextNode(` ${event.message || ""}`);
+    const breakLine = document.createElement("br");
+    const time = document.createElement("small");
+    time.textContent = event.time || "";
+    row.append(level, message, breakLine, time);
     list.appendChild(row);
   });
 }
@@ -223,7 +229,6 @@ async function refresh() {
 
 $("applyStreams").addEventListener("click", () => {
   localStorage.setItem("farmbot_usb_stream", $("usbUrlInput").value.trim());
-  localStorage.setItem("farmbot_depth_stream", $("depthUrlInput").value.trim());
   if (currentState) renderStreams(currentState);
 });
 

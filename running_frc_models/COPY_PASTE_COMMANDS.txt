@@ -1,0 +1,55 @@
+# COPY-PASTE COMMANDS FOR JETSON
+
+## On first setup, run this once:
+```bash
+chmod +x ~/running_frc_models/*.sh
+```
+
+## Then for each session:
+
+### Terminal 1 - Test Models (optional, first time only)
+```bash
+~/running_frc_models/1_test_models.sh
+```
+
+### Terminal 2 - Camera Server
+```bash
+~/running_frc_models/2_start_camera_server.sh
+```
+
+### Terminal 3 - Model Inference & Telemetry
+```bash
+~/running_frc_models/3_start_inference.sh
+```
+
+---
+
+## Quick Commands (No Script)
+
+**Test models:**
+```bash
+cd ~/running_frc_models && python3 test_models.py
+```
+
+**Start camera:**
+```bash
+cd ~/running_frc_models && python3 jetson_camera_server.py --host 0.0.0.0 --port 8090
+```
+
+**Start inference (change PC_IP to your PC):**
+```bash
+cd ~/running_frc_models && python3 jetson_inference.py --dashboard-url http://10.137.170.216:8001 --usb-camera 0 --interval 8.0
+```
+
+**Test without camera:**
+```bash
+cd ~/running_frc_models && python3 jetson_inference.py --dashboard-url http://10.137.170.216:8001 --skip-camera --interval 8.0
+```
+
+---
+
+## Dashboard URL
+Once everything is running:
+**http://10.137.170.216:8001**
+
+(Replace 10.137.170.216 with your actual PC IP)

@@ -172,7 +172,7 @@ h2 {
 .feed-grid,
 .bottom-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
 }
 
@@ -208,7 +208,8 @@ h2 {
   display: none;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: #050806;
 }
 
 .feed-frame.has-feed img {
